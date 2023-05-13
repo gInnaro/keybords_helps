@@ -1,8 +1,10 @@
 from serial.tools import list_ports
 from threading import Thread
 from tkinter import Tk, ttk, StringVar
+from pystray import MenuItem as item
+import pystray
 import tkinter as tk
-from time import sleep
+from PIL import Image
 from key_jobs import Jobs
 from button_block import Button_block as block_button
 from color_menu import Color_menu
@@ -12,14 +14,15 @@ class Dekstops():
     def __init__(self):
         super().__init__()
         self.modes = False
-
         self.window = tk.Tk()
         self.window.title("Keyboard_ADD")
+        self.image()
+        self.window.iconbitmap(default="img/day/image.ico")
         self.window.maxsize(1400, 810)
         self.window.minsize(1400, 810)
+        self.window.protocol('WM_DELETE_WINDOW', self.withdraw_window)
         self.fontExample = ("mr_CountryhouseG", 14)
         self.fontButton = ("mr_CountryhouseG", 18, "bold")
-        self.image()
         self.frame1 = tk.Frame(self.window, width=300, height=810, bg=self.bg_left, borderwidth=2)
         self.frame1.pack(side='left', expand=True)
         self.frame1.option_add('*TCombobox*Listbox.font', self.fontExample)
@@ -28,11 +31,25 @@ class Dekstops():
         self.frame2.pack(side='right', expand=True)
         self.create_widgets_right()
 
+    def quit_window(self, icon):
+        icon.stop()
+        self.window.destroy()
+
+    def show_window(self, icon):
+        icon.stop()
+        self.window.after(0, self.window.deiconify)
+
+    def withdraw_window(self):
+        self.window.withdraw()
+        menu = (item('Развернуть', self.show_window), item('Закрыть', self.quit_window))
+        icon = pystray.Icon("Keyboard_ADD", self.image, "Keyboard_ADD", menu)
+        icon.run()
+
     def image(self):
+        self.image = Image.open("img/day/image.png")
         self.bg_left = '#e7e7e7'
         self.bg_right = '#FFFFFF'
         self.button_image = tk.PhotoImage(file='img/day/BTN_PIN1.png')
-        self.day = tk.PhotoImage(file='img/day/day.png')
         self.conn = tk.PhotoImage(file='img/day/Conn.png')
         self.reconn = tk.PhotoImage(file='img/day/Re_conn.png')
         self.note1 = tk.PhotoImage(file="img/day/note_1.png")
